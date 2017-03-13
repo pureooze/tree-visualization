@@ -4,8 +4,7 @@ from pygame.locals import *
 import pyganim
 import sys
 
-# [[[None, 1, None], 6, None], 10, [[None, 20, None], 22, [None, 50, None]]]
-def disTree(root, screen, x=0, y=0):
+def displayTree(root, screen, x=0, y=0):
     depth = root.getDepth()
     xdiff = 5*pow(2,depth)
     ydiff = 50
@@ -21,32 +20,7 @@ def disTree(root, screen, x=0, y=0):
 
     if root.getRight() is not None:
         disTree(root.getRight(), screen, x+xdiff, y+ydiff)
-
-def displayTree(tree, depth, screen, x=0, y=0):
-    xdiff = 15*depth
-    try:
-        if tree[0] is not None:
-            if tree[0][2] is not None:
-                displayTree(tree[0], depth-1, screen, x-xdiff, y+30)
-            else:
-                displayTree(tree[0], depth-1, screen, x-xdiff, y+30)
-                
-    except TypeError:
-        pass
-
-    pygame.draw.circle(screen, (0,0,0), (x,y), 10)
-
-    try:
-        if tree[2] is not None:
-            if tree[2][0] is not None:
-                displayTree(tree[2], depth-1, screen, x+xdiff, y+30)
-            else:
-                displayTree(tree[2], depth-1, screen, x+xdiff, y+30)
-
-                
-    except TypeError:
-        pass
-            
+        
 
 if __name__ == "__main__":
     mytree = BST(50)
@@ -86,6 +60,6 @@ if __name__ == "__main__":
                 sys.exit()
                 
         windowSurface.fill((255, 255, 255))
-        disTree(mytree, windowSurface, 350, 30)
+        displayTree(mytree, windowSurface, 350, 30)
         
         pygame.display.update()
