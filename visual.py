@@ -3,24 +3,56 @@ import pygame
 from pygame.locals import *
 import pyganim
 import sys
-
-def displayTree(root, screen, x=0, y=0):
+# [50, [100, [80, [60, [61]]]]]
+def displayTree(root, screen, x=0, y=0, path=[]):
     depth = root.getDepth()
     xdiff = 5*pow(2,depth)
     ydiff = 50
     fontName = "Times New Roman"
     font = pygame.font.SysFont(fontName, 12, 1)
-    
-    if root.getLeft() is not None:
-        disTree(root.getLeft(), screen, x-xdiff, y+ydiff)
+    black = (0, 0, 0)
+    red = (200, 0, 0)
+    lineWidth = 5
 
-    pygame.draw.circle(screen, (0,0,0), (x,y), 15)
-    label = font.render(str(root.value), 1, (255,255,255))
-    screen.blit(label, (x-8,y-5))    
+    try:
+        if root.value == path[0]:
+            circleColor = red
+        else:
+            circleColor = black
+    except IndexError:
+        circleColor = black
+        
+    if root.getLeft() is not None:
+        try:
+            if root.getLeft().getVal() is path[1][0]:
+                pygame.draw.line(screen, red, (x, y), (x-xdiff, y+ydiff), lineWidth)
+            else:
+                pygame.draw.line(screen, black, (x, y), (x-xdiff, y+ydiff), lineWidth)
+        except IndexError:
+            pygame.draw.line(screen, black, (x, y), (x-xdiff, y+ydiff), lineWidth)
+
+        try:
+            displayTree(root.getLeft(), screen, x-xdiff, y+ydiff, path[1])
+        except IndexError:
+            displayTree(root.getLeft(), screen, x-xdiff, y+ydiff)
 
     if root.getRight() is not None:
-        disTree(root.getRight(), screen, x+xdiff, y+ydiff)
-        
+        try:
+            if root.getRight().getVal() is path[1][0]:
+                pygame.draw.line(screen, red, (x, y), (x+xdiff, y+ydiff), lineWidth)
+            else:
+                pygame.draw.line(screen, black, (x, y), (x+xdiff, y+ydiff), lineWidth)
+        except IndexError:
+            pygame.draw.line(screen, black, (x, y), (x+xdiff, y+ydiff), lineWidth)
+
+        try:
+            displayTree(root.getRight(), screen, x+xdiff, y+ydiff, path[1])
+        except IndexError:
+            displayTree(root.getRight(), screen, x+xdiff, y+ydiff)
+
+    pygame.draw.circle(screen, circleColor, (x,y), 15)
+    label = font.render(str(root.value), 1, (255,255,255))
+    screen.blit(label, (x-8,y-5)) 
 
 if __name__ == "__main__":
     mytree = BST(50)
@@ -38,12 +70,13 @@ if __name__ == "__main__":
     mytree.insertNode(21)
     mytree.insertNode(10)
     mytree.insertNode(101)
+    mytree.insertNode(61)
    
 
-    #path = mytree.search(20)
+    path = mytree.search(30)
     tree = mytree.inorderTraversal()
     depth = mytree.getDepth()
-    print(tree)
+    print(path)
 
     pygame.init()
     windowWidth = 960
@@ -60,6 +93,6 @@ if __name__ == "__main__":
                 sys.exit()
                 
         windowSurface.fill((255, 255, 255))
-        displayTree(mytree, windowSurface, 350, 30)
+        displayTree(mytree, windowSurface, 350, 30, path)
         
         pygame.display.update()
